@@ -44,4 +44,4 @@ async def delete_user(id: str):
 async def create_user_page(user:User):
     df = px.data.tips()
     fig = px.pie(df, values='tip', names='day')
-    fig.write_html(f"{user.tgid}.html",default_height='20%')
+    fig.write_html(f"{user.tgid}.html",default_height='50%')
