@@ -28,7 +28,7 @@ def webAppKeyboardInline(): #создание inline-клавиатуры с web
 @dp.message_handler(commands=['start']) #обрабатываем команду старт
 async def start_fun(message):
    if (await get_one_user(message.from_user.id))["data"]==[]:
-    
+    user = User(name=message.from_user.first_name,tgid=message.from_user.id,pay_state='0')
     await create_user(user)
    user = User(name=message.from_user.first_name,tgid=message.from_user.id,pay_state='0')
    await create_user_page(user)
