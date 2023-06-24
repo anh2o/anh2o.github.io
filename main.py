@@ -1,7 +1,13 @@
-from telebot import types
-import telebot
+import logging 
+from aiogram import Bot, Dispatcher, executor, types
+from routes.user_routes import create_user,get_one_user
+from models.user_model import User
 
-bot = telebot.TeleBot('6225207824:AAFPgfg9U0vJd40JBfcOmPgYg7xpGEnhBMc')
+API_TOKEN = '6225207824:AAFPgfg9U0vJd40JBfcOmPgYg7xpGEnhBMc'
+logging.basicConfig(level=logging.INFO)
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
+
 
 def webAppKeyboard(): #создание клавиатуры с webapp кнопкой
    keyboard = types.ReplyKeyboardMarkup(row_width=1) #создаем клавиатуру
@@ -22,17 +28,19 @@ def webAppKeyboardInline(): #создание inline-клавиатуры с web
    return keyboard #возвращаем клавиатуру
 
 
-@bot.message_handler(commands=['start']) #обрабатываем команду старт
-def start_fun(message):
-   bot.send_message( message.chat.id, 'Привет, я бот для проверки телеграмм webapps!)\nЗапустить тестовые страницы можно нажав на кнопки.', parse_mode="Markdown", reply_markup=webAppKeyboard()) #отправляем сообщение с нужной клавиатурой
+@dp.message_handler(commands=['start']) #обрабатываем команду старт
+async def start_fun(message):
+   await bot.send_message(message.chat.id, 'Привет', parse_mode="Markdown", reply_markup=webAppKeyboard()) #отправляем сообщение с нужной клавиатурой
+   if (await get_one_user(message.from_user.id))["data"]!=[]:
+    user=User(name=message.from_user.first_name,tgid=message.from_user.id,pay_state='0')
+    create_user(user)
 
-
-@bot.message_handler(content_types="text")
+@dp.message_handler(content_types="text")
 def new_mes(message):
    start_fun(message)
 
 
-@bot.message_handler(content_types="web_app_data") #получаем отправленные данные 
+@dp.message_handler(content_types="web_app_data") #получаем отправленные данные 
 def answer(webAppMes):
    print(webAppMes) #вся информация о сообщении
    print(webAppMes.web_app_data.data) #конкретно то что мы передали в бота
@@ -40,4 +48,4 @@ def answer(webAppMes):
    #отправляем сообщение в ответ на отправку данных из веб-приложения 
 
 if __name__ == '__main__':
-   bot.infinity_polling()
+   executor.start_polling(dp, skip_updates=True)
