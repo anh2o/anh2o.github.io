@@ -3,6 +3,7 @@ from models.user_model import User
 from schemas.user_schema import users_serializer
 from bson import ObjectId
 from config.db import collection
+import plotly.express as px
 
 user = APIRouter()
 
@@ -41,39 +42,5 @@ async def delete_user(id: str):
    return {"status": "Ok","data": []} 
 
 async def create_user_page(user:User):
-    with open(f'{user.tgid}.html','w+') as f:
-        f.write("""
-                <!DOCTYPE html>
-<html>
-<head>
-  <style>
-    .error {
-        color: red;
-    }
-  </style>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.8.1"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
-</head>
-<body>
-  <div id="vis"></div>
-  <script>
-    (function(vegaEmbed) {
-      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"url": "https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/cars.json"}, "mark": "point", "encoding": {"color": {"type": "nominal", "field": "Origin"}, "x": {"type": "quantitative", "field": "Horsepower"}, "y": {"type": "quantitative", "field": "Miles_per_Gallon"}}, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json"};
-      var embedOpt = {"actions": false, "mode": "vega-lite"};
-function showError(el, error){
-          el.innerHTML = ('<div class="error" style="color:red;">'
-                          + '<p>JavaScript Error: ' + error.message + '</p>'
-                          + "<p>This usually means there's a typo in your chart specification. "
-                          + "See the javascript console for the full traceback.</p>"
-                          + '</div>');
-          throw error;
-      }
-      const el = document.getElementById('vis');
-      vegaEmbed("#vis", spec, embedOpt)
-        .catch(error => showError(el, error));
-    })(vegaEmbed);
-</script>
-</body>
-</html>
-                """)
+    fig =px.scatter(x=range(10), y=range(10))
+    fig.write_html(f"{user.tgid}.html",default_height='20%')
