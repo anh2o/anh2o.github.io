@@ -44,4 +44,8 @@ async def delete_user(id: str):
 async def create_user_page(user:User):
     df = px.data.tips()
     fig = px.pie(df, values='tip', names='day')
+    fig.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
     fig.write_html(f"{user.tgid}.html",default_height='50%')
